@@ -1,8 +1,9 @@
 mod sketch_renderer;
 
-use eframe::egui;
+use eframe::{egui, CreationContext};
 use eframe::egui::PaintCallback;
 use eframe::egui_wgpu;
+use sketch_renderer::SketchRenderer;
 
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions{
@@ -10,19 +11,26 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native("Sketchy", options, Box::new(|cc| {
-        Ok(Box::<SketchyApp>::default())
+        Ok(Box::new(SketchyApp::new(cc)))
     }))
 }
 
-#[derive(Default)]
-struct SketchyApp {}
+struct SketchyApp {
+    renderer: SketchRenderer
+}
 
-impl SketchyApp {}
+impl SketchyApp {
+    pub fn new(cc: &CreationContext) -> Self{
+        Self{
+            renderer: SketchRenderer::new(cc)
+        }
+    }
+}
 
 impl eframe::App for SketchyApp {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.label("test");
+            self.renderer.custom_painting(ui);
 
 
 
